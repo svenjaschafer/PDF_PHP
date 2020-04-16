@@ -7,7 +7,7 @@ require_once('system/config.php');
 require_once('system/data.php');
 
 // ------------------- Variabeln definieren -------------------
-$id = 1;
+$id = $_SESSION['userid'];
 $user = get_user_by_id($id);
 
 // ------------------- Allgemeine Angaben des PDFs -------------------

@@ -37,7 +37,19 @@ function get_db_connection(){
 
 
 /************************ GRUNDLEGENDE BEFEHLE ************************/
-
+// Einloggen
+// Funktion benötigt 2 Parameter $email und $password
+function login($email, $password){
+  $db = get_db_connection();
+  $sql = "SELECT * FROM user WHERE email='$email' AND password='$password';";
+  $result = $db->query($sql);
+  if($result->rowCount() == 1){
+    $row = $result->fetch();
+    return $row;
+  }else{
+    return false;
+  }
+}
 
 /************************ INSERT BEFEHLE ************************/
 
@@ -50,4 +62,13 @@ function get_user_by_id($id){
   $sql = "SELECT * FROM user WHERE id = $id;";
   $result = $db->query($sql);
   return $result->fetch();
+}
+
+/************************ UPDATE BEFEHLE ************************/
+
+function update_fortschritt($fortschritt_vorbereitung, $fortschritt_umsetzung, $fortschritt_praesentation, $id){
+  $db = get_db_connection();
+  $sql = "UPDATE user SET fortschritt_vorbereitung = ? , fortschritt_umsetzung = ?, fortschritt_praesentation = ? WHERE id = $id;";
+  $stmt = $db->prepare($sql);
+  return $stmt->execute(array($fortschritt_vorbereitung, $fortschritt_umsetzung, $fortschritt_praesentation, $id));
 }
