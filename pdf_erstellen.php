@@ -4,19 +4,29 @@ $diplom_nummer = "1";
 $ausstelldatum = date("d.m.Y");
 $pdfAuthor = "Svenja Schafer";
 
-$diplom_header = 'Svenja Schafer';
+$diplom_header = '
+"Eventuell Logo FHGR"
+Fachhochschule Graubünden
+Pulvermühlestrasse 57
+7000 Chur
+Tel. +41 81 286 24 24
+info@fhgr.ch
+
+Minor WebTech
+';
 
 $diplom_empfaenger = 'Hier kommt der Name des Empfängers';
 
 $diplom_footer = "Hiermit bestätigen wir, dass <b>Anrede</b> <b>Vorname</b> <b>Nachname</b> das Minor WebTech im Frühlingssemester 2020 erfolgreich abgeschlossen hat.";
 
-//Auflistung eurer verschiedenen Posten im Format [Produktbezeichnung, Menge, Einzelpreis]
-$diplom_posten = array(
- array("Projekt", 1, 42.50),
- array("Produkt 2", 5, 5.20),
- array("Produkt 3", 3, 10.00));
+//Array mit Projekten [Projekt, Zeitaufwand, Abgabedatum]
+$diplom_projekt = array(
+ array("Projekt 1", 1, 42.50),
+ array("Projekt 1", 5, 5.20),
+ array("Projekt 3", 3, 10.00));
 
 //Höhe eurer Umsatzsteuer. 0.19 für 19% Umsatzsteuer
+// -
 $umsatzsteuer = 0.0;
 
 //Name des PDFs, wenn es heruntergeladen wird
@@ -57,15 +67,14 @@ Diplom
 
 <table cellpadding="5" cellspacing="0" style="width: 100%;" border="0">
  <tr style="background-color: #cccccc; padding:5px;">
- <td style="padding:5px;"><b>Projekt</b></td>
- <td style="text-align: center;"><b>Zeitaufwand</b></td>
- <td style="text-align: center;"><b>Abgabedatum</b></td>
+   <td style="padding:5px;"><b>Projekt</b></td>
+   <td style="text-align: center;"><b>Zeitaufwand</b></td>
+   <td style="text-align: center;"><b>Abgabedatum</b></td>
  </tr>';
-
 
 $gesamtpreis = 0;
 
-foreach($diplom_posten as $posten) {
+foreach($diplom_projekt as $posten) {
  $menge = $posten[1];
  $einzelpreis = $posten[2];
  $preis = $menge*$einzelpreis;
@@ -78,8 +87,6 @@ foreach($diplom_posten as $posten) {
               </tr>';
 }
 $html .="</table>";
-
-
 
 $html .= '
 <hr>
@@ -110,6 +117,8 @@ $html .='
 if($umsatzsteuer == 0) {
  $html .= 'Nach § 19 Abs. 1 UStG wird keine Umsatzsteuer berechnet.<br><br>';
 }
+
+
 
 $html .= nl2br($diplom_footer);
 
