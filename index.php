@@ -1,29 +1,58 @@
 <?php
 // ------------------- CONTROLLER -------------------
 session_start();
-// Alle Site-relevanten Werte (base-url, DB-Einstellungen) sind in config.php zentral gespeichert.
+//Site-relevante Werte aus config.php
 require_once('system/config.php');
-// DB-Abfragen in data.php zusammengefasst
+//DB-Abfragen aus data.php
 require_once('system/data.php');
+//Sessionhandler
+require_once('templates/session_handler.php');
 
 // ------------------- Variabeln definieren -------------------
 $id = $_SESSION['userid'];
 $user = get_user_by_id($id);
-$fortschritt_vorbereitung = $user['fortschritt_vorbereitung'];
-$fortschritt_umsetzung = $user['fortschritt_umsetzung'];
-$fortschritt_praesentation = $user['fortschritt_praesentation'];
+$user_id = $user['id'];
+$vorbereitung = $user['vorbereitung'];
+$umsetzung = $user['umsetzung'];
+$praesentation = $user['praesentation'];
 
 $logged_in = true;
 
 // ------------------- Fortschritt updaten -------------------
-//funtioniert noch nicht
+//Wenn Button "Speichern" geklickt
 if(isset($_POST['checkbox_submit'])){
-  // $msg = Variable für Nachricht
-  $msg = "Fortschritt wurde gespeichert";
-  update_fortschritt($fortschritt_vorbereitung, $fortschritt_umsetzung, $fortschritt_praesentation, $id);
-
+  $msg = "";
+  //Wenn Switchbox "Vorbereitung" ein, $vorbereitung = 1
+  if(isset($_POST['fortschritt_vorbereitung'])){
+      $vorbereitung = $_POST['fortschritt_vorbereitung'];
+      //$vorbereitung = 1;
+  //sonst $vorbereitung = 0
+  }else{
+    $vorbereitung = 0;
+  }
+  //Wenn Switchbox "Umsetzung" ein, $umsetzung = 1
+  if(isset($_POST['fortschritt_umsetzung'])){
+      $umsetzung = $_POST['fortschritt_umsetzung'];
+      //$umsetzung = 1;
+  //sonst $umsetzung = 0
+  }else{
+    $umsetzung = 0;
+  }
+  //Wenn Switchbox "Präsentation" ein, $praesentation = 1
+  if(isset($_POST['fortschritt_praesentation'])){
+      $praesentation = $_POST['fortschritt_praesentation'];
+      //$praesentation = 1;
+  //sonst $praesentation = 0
+  }else{
+    $praesentation = 0;
   }
 
+  //Fortschritt in Datenbank speichern
+  update_fortschritt($vorbereitung, $umsetzung, $praesentation, $id);
+  $msg .= "Dein Fortschritt wurde gespeichert.";
+}
+
+// ------------------- VIEW -------------------
  ?>
 
  <!DOCTYPE html>
@@ -34,67 +63,70 @@ if(isset($_POST['checkbox_submit'])){
      <!-- Header -->
      <?php
        $page_head_title = "Minor WebTech"; // Inhalt des <title>-Elements
-       require_once('templates/page_head.php'); // Inhalt des <head>-Elements aus externer PHP-Datei
+       require_once('templates/page_head.php'); // Inhalt des <head>-Elements einbinden
      ?>
    </head>
    <body>
-     <div class="container" align="center">
+     <div align="center">
       <!-- Navigation -->
-      <?php require_once('templates/menu.php'); // Navigation aus externer PHP-Datei ?>
-
+      <?php require_once('templates/menu.php'); //Navigation einbinden ?>
+      <!-- Inhalt -->
       <section>
-        <br><br><br>
+        <br><br><br><br>
         <h1>Hallo <?php echo $user['firstname'] ?> </h1>
         <p>Schön, dass du das Minor WebTech gewählt hast.</p>
         <br>
 
-        <h2>Fortschritt</h2>
-        <p>Gib deinen Fortschritt an und klicke anschliessend auf speichern.</p>
-        <br>
-        <!-- Fortschritt Checkbox-->
-        <div class="row" align="left">
-          <!-- Spalte 1 (ohne Inhalt) -->
-          <div class="col-sm">
-            <p>Vorbereitung: <?php echo $fortschritt_vorbereitung ?></p>
-            <p>Umsetzung: <?php echo $fortschritt_umsetzung ?></p>
-            <p>Präsentation: <?php echo $fortschritt_praesentation ?></p>
-          </div>
-          <!-- Spalte 2 (Checkbox) -->
-          <div class="col-3">
+        <!-- Fortschritt -->
+        <div style="background: lightgrey">
+          <br>
+          <h2>Fortschritt</h2>
+          <p>Gib deinen Fortschritt an und klicke anschliessend auf speichern.</p>
+          <br>
+
+          <!-- Fortschritt Checkbox-->
+          <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
             <div class="custom-control custom-switch">
-              <input type="checkbox" class="custom-control-input" id="customSwitchVorbereitung" value="">
+              <input type="checkbox" name="fortschritt_vorbereitung" class="custom-control-input"
+              id="customSwitchVorbereitung" value="1" <?php if($vorbereitung) echo "checked" ?>>
               <label class="custom-control-label" for="customSwitchVorbereitung">Vorbereitung</label>
             </div>
             <div class="custom-control custom-switch">
-              <input type="checkbox" class="custom-control-input" id="customSwitchUmsetzung" value="">
+              <input type="checkbox" name="fortschritt_umsetzung" class="custom-control-input"
+              id="customSwitchUmsetzung" value="1" <?php if($umsetzung) echo "checked" ?>>
               <label class="custom-control-label" for="customSwitchUmsetzung">Umsetzung</label>
             </div>
             <div class="custom-control custom-switch">
-              <input type="checkbox" class="custom-control-input" id="customSwitchPraesentation" value="">
+              <input type="checkbox" name="fortschritt_praesentation" class="custom-control-input"
+              id="customSwitchPraesentation" value="1" <?php if($praesentation) echo "checked" ?>>
               <label class="custom-control-label" for="customSwitchPraesentation">Präsentation</label>
             </div>
             <br>
             <button type="submit" name="checkbox_submit" class="btn btn-secondary" value="speichern" align="center">Speichern</button>
-          </div>
-          <!-- optionale Nachricht -->
-    <?php if(!empty($msg)){ ?>
-          <div class="alert alert-info msg" role="alert">
-            <p><?php echo $msg ?></p>
-          </div>
-    <?php } ?>
-          <!-- Spalte 3 (ohne Inhalt) -->
-          <div class="col-sm"></div>
+          </form>
+          <br>
+
+          <!-- Text wenn gespeichert -->
+          <?php if(!empty($msg)){ ?>
+            <div class="alert alert-info msg" role="alert">
+              <p><?php echo $msg ?></p>
+            </div>
+          <?php } ?>
+          <br>
         </div>
 
-        <!-- Diplom Button -->
-        <br><br><br>
-        <p>Gratuliere, du hast alle Aufgaben für das Minor Webtech erfüllt.</p>
-        <p>Klick auf den Button um dein Diplom zu generieren.</p>
-        <a class="btn btn-secondary btn-lg" href="<?php echo $base_url ?>pdf_erstellen2.php" role="button" target="_blank">Diplom</a>
-
-
+        <!-- Diplom -->
+        <?php if($vorbereitung && $umsetzung && $praesentation){ ?>
+          <br>
+          <h2>Diplom</h2>
+          <p>Gratuliere, du hast alle Aufgaben für das Minor Webtech erfüllt.</p>
+          <p>Klick auf den Button um dein Diplom zu generieren.</p>
+          <a class="btn btn-secondary btn-lg" href="<?php echo $base_url ?>pdf.php" role="button" target="_blank">Diplom</a>
+        <?php } ?>
       </section>
      </div>
 
+     <!-- Footer -->
+     <?php include_once('templates/footer.php') ?>
    </body>
  </html>

@@ -1,12 +1,16 @@
 <?php
 // ------------------- CONTROLLER -------------------
 session_start();
-// Alle Site-relevanten Werte (base-url, DB-Einstellungen) sind in config.php zentral gespeichert.
+//Site-relevante Werte aus config.php
 require_once('system/config.php');
-// DB-Abfragen in data.php zusammengefasst
+//DB-Abfragen aus data.php
 require_once('system/data.php');
 
+// ------------------- Variabeln definieren -------------------
+$logged_in = false;
+$log_in_out_text = "Anmelden";
 
+// ------------------- Anmeldung -------------------
  // Wir prüfen, ob es eine Session-Variable $_SESSION['userid'] gibt.
  if(isset($_SESSION['userid'])) {
    // Falls es eine solche Variable gibt, zerstören wir sie...
@@ -14,12 +18,7 @@ require_once('system/data.php');
    // Session beenden - User ist ausgeloggt.
    session_destroy();
  }
- // Die in templates/menu.php benötigten Variablen müssen wir im Controller setzen.
- // (Diese Variablen werden sonst in templates/session_handler.php vergeben.)
- $logged_in = false;
- $log_in_out_text = "Anmelden";
-
-
+ //Wenn Button "Anmelden" geklickt
  if(isset($_POST['login_submit'])){
    // User kann nur eingeloggt werden, wenn Variable true ist
    $login_submit_valid = true;
@@ -73,7 +72,6 @@ require_once('system/data.php');
  }
   // ---------------------- VIEW ----------------------
  ?>
-
 
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
@@ -134,14 +132,6 @@ require_once('system/data.php');
         <!-- Spalte 3 (ohne Inhalt) -->
         <div class="col-sm"></div>
       </div>
-
-
-
-
-
-
-      <!-- Footer -->
-      <?php include_once('templates/footer.php') ?>
     </div>
   </body>
 </html>
